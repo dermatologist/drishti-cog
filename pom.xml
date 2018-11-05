@@ -105,6 +105,13 @@
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
+
+		<!-- OMH -->
+		<dependency>
+			<groupId>org.openmhealth.schema</groupId>
+			<artifactId>omh-schema-sdk</artifactId>
+			<version>1.2.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -142,5 +149,14 @@
 			</plugin>
 		</plugins>
 	</build>
-
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-openmhealth-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/openmhealth/maven</url>
+        </repository>
+    </repositories>
 </project>
