@@ -78,10 +78,10 @@ public class MessageConsumerClient {
 
     };
 
-    private MessageConsumerClient(Date from, Date to) throws Exception {
+    private MessageConsumerClient() throws Exception {
         this.camelContext.addRoutes(this.routeBuilder);
-        this.from = from;
-        this.to = to;
+//        this.from = from;
+//        this.to = to;
     }
 
     public void consume() {
@@ -90,5 +90,21 @@ public class MessageConsumerClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Date getFrom() {
+        return from;
+    }
+
+    public void setFrom(Date from) {
+        this.from = from;
+    }
+
+    public Date getTo() {
+        return to;
+    }
+
+    public void setTo(Date to) {
+        this.to = to;
     }
 }
