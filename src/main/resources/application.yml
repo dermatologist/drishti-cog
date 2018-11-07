@@ -68,3 +68,9 @@ app:
 
         resources:
           - file: datasets/questionnaires/test-ques-1.json
+    drishti:
+        shimmer: resource-server
+        auth: authorizationserver
+        resources: dsu-resource-server
+        console: console
+        pollinterval: 30 #TODO Change this
