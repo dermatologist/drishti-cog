@@ -43,7 +43,7 @@ public class MessageConsumerClient {
                     .setBody()
                     .constant("grant_type=client_credentials&client_id=<client id>&client_secret=<client sec>")
 //                    .to("https4://<remote auth service url>")
-                    .to("http4://localhost/oauth2/token")
+                    .to("http4://localhost/omh/token")
 
                     .convertBodyTo(String.class)
                     .log("response from API: " + body())
