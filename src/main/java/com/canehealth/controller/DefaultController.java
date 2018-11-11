@@ -61,6 +61,12 @@ public class DefaultController extends WebMvcConfigurerAdapter {
         return new ModelAndView("forward:/auth");
     }
 
+    @RequestMapping("/cog")
+    public ModelAndView cog2console() {
+        // forwards from /omh/token to /auth
+        return new ModelAndView("forward:/console");
+    }
+
 //    @RequestMapping("/omh/auth")
 //    public ModelAndView oauth() {
 //        return new ModelAndView("forward:/redirectedUrl");
