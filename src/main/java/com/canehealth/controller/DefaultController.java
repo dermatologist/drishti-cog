@@ -57,7 +57,8 @@ public class DefaultController extends WebMvcConfigurerAdapter {
 
     @RequestMapping("/omh/token")
     public ModelAndView oauth2Token() {
-        return new ModelAndView("forward:localhost/auth");
+        // forwards from /omh/token to /auth
+        return new ModelAndView("forward:/auth");
     }
 
 //    @RequestMapping("/omh/auth")
@@ -67,13 +68,13 @@ public class DefaultController extends WebMvcConfigurerAdapter {
 
     @RequestMapping("/omh/dsu")
     public ModelAndView dsu() {
-        return new ModelAndView("forward:/localhost/dsu");
+        return new ModelAndView("forward:/dsu");
     }
 
     @RequestMapping("/omh/shimmer")
     public ModelAndView shimmer() {
         // Authorize access from the console
         // http://<<shimmer-host>>:8083/data/{shimKey}/{endpoint}?username={userId}&dateStart=yyyy-MM-dd&dateEnd=yyyy-MM-dd&normalize={true|false}
-        return new ModelAndView("forward:/localhost/shimmer/data");
+        return new ModelAndView("forward:/shimmer/data");
     }
 }
