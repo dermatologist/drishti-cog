@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>ca.uhn.hapi.fhir</groupId>
 		<artifactId>hapi-fhir</artifactId>
-        <version>3.2.0</version>
+        <version>3.6.0</version>
 	</parent>
 
 	<groupId>com.canehealth</groupId>
@@ -19,6 +19,9 @@
         <maven.build.timestamp.format>EEE, MMM dd yyyy, HH:mm Z</maven.build.timestamp.format>
         <camel.version>2.22.1</camel.version>
         <omh-schema.version>1.2.1</omh-schema.version>
+        <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
+        <h2.version>1.4.197</h2.version>
+        <slf4jVersion>1.7.16</slf4jVersion>
     </properties>
 
 	<dependencies>
@@ -26,18 +29,17 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+            <version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jersey</artifactId>
+            <version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -84,18 +86,30 @@
         <dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+            <version>${h2.version}</version>
 		</dependency>
+        <dependency>
+
+            <groupId>org.slf4j</groupId>
+
+            <artifactId>slf4j-api</artifactId>
+
+            <version>${slf4jVersion}</version>
+
+        </dependency>
 		<!-- Optional -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring-boot.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+            <version>${spring-boot.version}</version>
+            <scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -117,7 +131,13 @@
         <dependency>
             <groupId>org.gtri.hdap</groupId>
             <artifactId>mdataserver</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.99.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- camel -->

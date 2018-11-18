@@ -10,8 +10,11 @@ import ca.uhn.fhir.rest.server.IServerAddressStrategy;
 import ca.uhn.fhir.rest.server.IncomingRequestAddressStrategy;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import com.canehealth.interceptor.DataElementResponseInterceptor;
+import com.canehealth.repository.DrishtiApplicationUserRepository;
+import com.canehealth.repository.DrishtiShimmerDataRepository;
 import org.hl7.fhir.dstu3.model.MetadataResource;
 import org.hl7.fhir.dstu3.model.StructureDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +42,12 @@ public class ServerConfig {
     public IServerAddressStrategy serverAddressStrategy() {
         return new IncomingRequestAddressStrategy();
     }
+
+    @Autowired
+    DrishtiShimmerDataRepository drishtiShimmerDataRepository;
+
+    @Autowired
+    DrishtiApplicationUserRepository drishtiApplicationUserRepository;
 
     /**
      * The server can access itself with this client

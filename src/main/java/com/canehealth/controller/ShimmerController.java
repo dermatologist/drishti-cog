@@ -9,20 +9,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import org.gtri.hdap.mdata.service.ResponseService;
-import org.gtri.hdap.mdata.jpa.entity.ApplicationUser;
-import org.gtri.hdap.mdata.jpa.entity.ApplicationUserId;
-import org.gtri.hdap.mdata.jpa.entity.ShimmerData;
-import org.gtri.hdap.mdata.jpa.repository.ApplicationUserRepository;
-import org.gtri.hdap.mdata.jpa.repository.ShimmerDataRepository;
-import org.gtri.hdap.mdata.service.ResponseService;
 import org.gtri.hdap.mdata.service.ShimmerAuthenticationException;
 import org.gtri.hdap.mdata.service.ShimmerResponse;
-import org.gtri.hdap.mdata.service.ShimmerService;
 import org.gtri.hdap.mdata.util.ShimmerUtil;
 
 import org.springframework.http.HttpStatus;
@@ -36,10 +27,10 @@ public class ShimmerController {
     private String shimmerId = "";
 
     @Autowired
-    private DrishtiResponseService responseService;
+    private DrishtiResponseService drishtiResponseService;
 
     @Autowired
-    private DrishtiShimmerService shimmerService;
+    private DrishtiShimmerService drishtiShimmerService;
 
     @ModelAttribute("shimmerId")
     public String shimmerId(){
@@ -66,11 +57,11 @@ public class ShimmerController {
         // for example https://<shimmer-host>/authorize/fitbit?username={userId}
         // The username query parameter can be set to any unique identifier you'd like to use to identify the user.
 
-        String userShimmerId = responseService.getShimmerId(ehrId, shimkey);
+        String userShimmerId = drishtiResponseService.getShimmerId(ehrId, shimkey);
         //add the shimmer id to the model
         model.addAttribute("shimmerId", userShimmerId);
 
-        ShimmerResponse shimmerResponse = shimmerService.requestShimmerAuthUrl(userShimmerId, shimkey);
+        ShimmerResponse shimmerResponse = drishtiShimmerService.requestShimmerAuthUrl(userShimmerId, shimkey);
         String oauthAuthUrl = null;
         if( shimmerResponse.getResponseCode() == HttpStatus.OK.value()){
             oauthAuthUrl = shimmerResponse.getResponseData();
