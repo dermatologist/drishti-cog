@@ -114,6 +114,12 @@
 			<artifactId>omh-schema-sdk</artifactId>
 			<version>${omh-schema.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.gtri.hdap</groupId>
+            <artifactId>mdataserver</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- camel -->
         <dependency>
             <groupId>org.apache.camel</groupId>
