@@ -5,22 +5,26 @@ import com.canehealth.repository.DrishtiShimmerDataRepository;
 import com.canehealth.service.DrishtiResponseService;
 import com.canehealth.service.DrishtiShimmerService;
 import org.gtri.hdap.mdata.jpa.entity.ApplicationUser;
+import org.gtri.hdap.mdata.service.ShimmerAuthenticationException;
+import org.gtri.hdap.mdata.service.ShimmerResponse;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.DocumentReference;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import org.slf4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import org.gtri.hdap.mdata.service.ShimmerAuthenticationException;
-import org.gtri.hdap.mdata.service.ShimmerResponse;
-import org.gtri.hdap.mdata.util.ShimmerUtil;
-
-import org.springframework.http.HttpStatus;
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @SessionAttributes("shimmerId")
@@ -105,6 +109,93 @@ public class ShimmerController {
         ModelAndView mvToReturn = new ModelAndView(redirectUrl, model);
 
         return mvToReturn;
+    }
+
+    /**
+     * Handles a Get request for a DocumentReference. It can take in up to two dates for a search between two
+     * time periods.
+     *
+     * @param shimmerId
+     * @param dateQueries
+     * @return
+     */
+    //GET https://apps.hdap.gatech.edu/hapiR4/baseR4/DocumentReference?subject=EXxcda
+    @GetMapping("/DocumentReference")
+    public ResponseEntity findDocumentReference(@RequestParam(name = "subject", required = true) String shimmerId,
+                                                @RequestParam(name = "date") List<String> dateQueries) {
+        logger.debug("processing document request");
+        //look up the user
+        ApplicationUser applicationUser = applicationUserRepository.findByShimmerId(shimmerId);
+        String shimKey = applicationUser.getApplicationUserId().getShimKey();
+
+        String binaryRefId = "";
+        //retrieve patient data
+        ShimmerResponse shimmerResponse = drishtiShimmerService.retrievePatientData(applicationUser, dateQueries);
+
+        if (shimmerResponse.getResponseCode() == HttpStatus.OK.value()) {
+            binaryRefId = drishtiShimmerService.writePatientData(applicationUser, shimmerResponse);
+
+            //generate the document reference
+            DocumentReference documentReference = drishtiResponseService.generateDocumentReference(binaryRefId, shimKey);
+
+            logger.debug("finished processing document request");
+
+            Bundle responseBundle = drishtiResponseService.makeBundleWithSingleEntry(documentReference);
+            return ResponseEntity.ok(responseBundle);
+        } else {
+            //not successful
+            return ResponseEntity.status(shimmerResponse.getResponseCode()).body(shimmerResponse.getResponseData());
+        }
+    }
+
+    //handles requests of the format
+    //GET https://apps.hdap.gatech.edu/hapiR4/baseR4/Binary?_id=EXexample
+    @GetMapping(value = "/Binary/{documentId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    byte[] retrieveBinary(
+            @RequestHeader("Accept") String acceptHeader,
+            @PathVariable String documentId) {
+        logger.debug("Retrieving Binary with URL");
+        byte[] docBytes = drishtiResponseService.makeByteArrayForDocument(documentId);
+        return docBytes;
+    }
+
+    @GetMapping("/Binary")
+    public Bundle searchBinaryBundle(@RequestHeader("Accept") String acceptHeader,
+                                     @RequestParam(name = "_id", required = true) String documentId) {
+        logger.debug("Retriving Binary with URL param");
+        return drishtiResponseService.makeBundleForDocument(documentId);
+    }
+
+    //handles requests of the format
+    //GET https://apps.hdap.gatech.edu/hapiR4/baseR4/Observation?subject=EXf201
+    @GetMapping("/Observation")
+    public ResponseEntity findObservation(@RequestParam(name = "subject", required = true) String shimmerId,
+                                          @RequestParam(name = "date") List<String> dateQueries) {
+
+        logger.debug("processing observation request");
+        //look up the user
+        ApplicationUser applicationUser = applicationUserRepository.findByShimmerId(shimmerId);
+        String shimKey = applicationUser.getApplicationUserId().getShimKey();
+
+        ShimmerResponse shimmerResponse;
+        //parse start and end dates
+        shimmerResponse = drishtiShimmerService.retrieveShimmerData(DrishtiShimmerService.SHIMMER_STEP_COUNT_RANGE_URL, applicationUser, dateQueries);
+        if (shimmerResponse.getResponseCode() != HttpStatus.OK.value()) {
+            return ResponseEntity.status(shimmerResponse.getResponseCode()).body(shimmerResponse.getResponseData());
+        }
+
+        //generateObservationList
+        List<Resource> observations;
+        try {
+            observations = drishtiResponseService.generateObservationList(shimKey, shimmerResponse.getResponseData());
+        } catch (IOException ioe) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not generate observation.");
+        }
+
+        Bundle responseBundle = drishtiResponseService.makeBundle(observations);
+        return ResponseEntity.ok(responseBundle);
     }
 
 
