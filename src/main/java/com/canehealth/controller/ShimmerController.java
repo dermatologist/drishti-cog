@@ -1,9 +1,13 @@
 package com.canehealth.controller;
 
+import com.canehealth.repository.DrishtiApplicationUserRepository;
+import com.canehealth.repository.DrishtiShimmerDataRepository;
 import com.canehealth.service.DrishtiResponseService;
 import com.canehealth.service.DrishtiShimmerService;
+import org.gtri.hdap.mdata.jpa.entity.ApplicationUser;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +30,21 @@ public class ShimmerController {
 
     private String shimmerId = "";
 
+    @Value("${app.drishti.omhcallbackuri}")
+    private String omhCallbackUri;
+
     @Autowired
     private DrishtiResponseService drishtiResponseService;
 
     @Autowired
     private DrishtiShimmerService drishtiShimmerService;
+
+    @Autowired
+    private DrishtiApplicationUserRepository applicationUserRepository;
+
+    @Autowired
+    private DrishtiShimmerDataRepository shimmerDataRepository;
+
 
     @ModelAttribute("shimmerId")
     public String shimmerId(){
@@ -79,7 +93,7 @@ public class ShimmerController {
         //If the returned oauthAuthUrl equals the final callback URL for UI then the user has already
         //linked the EHR user to their device account via shimmer. Update the model to contain
         //loginSuccess true. The shimmerID for the model was set above so no need to set it again.
-        if( oauthAuthUrl.equals(System.getenv(ShimmerUtil.OMH_ON_FHIR_CALLBACK_ENV))) {
+        if( oauthAuthUrl.equals(omhCallbackUri)) {
             logger.debug("User already approved. Forwarding to login callback UI page");
             model.addAttribute("loginSuccess", true);
         }
@@ -93,4 +107,48 @@ public class ShimmerController {
         return mvToReturn;
     }
 
+
+    @GetMapping("/authorize/{shimkey}/callback")
+    public ModelAndView handleShimmerOauthCallback(ModelMap model,
+                                                   @ModelAttribute("shimmerId") String shimmerId,
+                                                   @PathVariable String shimkey,
+                                                   @RequestParam(name="code") String code,
+                                                   @RequestParam(name="state") String state){
+        logger.debug("Handling successful " + shimkey + " auth redirect");
+        logger.debug("MODEL shimmer id " + model.get("shimmerId"));
+        logger.debug("Passed in shimmer id " + shimmerId);
+        logger.debug("Code " + code);
+        logger.debug("State " + state);
+
+        String omhOnFhirUi;
+
+        //TODO: Why is this call to the shimmer API not working for Fitbit?
+        try {
+            drishtiShimmerService.completeShimmerAuth(shimkey, code, state);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            omhOnFhirUi = "redirect:" + omhCallbackUri;
+            model.addAttribute("loginSuccess", false);
+            logger.debug("Error with Authentication. Redirecting to: " + omhOnFhirUi);
+            return new ModelAndView(omhOnFhirUi, model);
+        }
+
+        ApplicationUser applicationUser = applicationUserRepository.findByShimmerId(shimmerId);
+        if(applicationUser != null){
+            applicationUserRepository.save(applicationUser);
+        }
+        else{
+            omhOnFhirUi = "redirect:" + omhCallbackUri;
+            model.addAttribute("loginSuccess", false);
+            logger.debug("Could not find Shimmer ID for user. Redirecting to: " + omhOnFhirUi);
+            return new ModelAndView(omhOnFhirUi, model);
+        }
+
+        omhOnFhirUi = "redirect:" + omhCallbackUri;
+        model.addAttribute("loginSuccess", true);
+        model.addAttribute("shimmerId", shimmerId);
+        logger.debug("Redirecting to: " + omhOnFhirUi);
+        return new ModelAndView(omhOnFhirUi, model);
+    }
 }

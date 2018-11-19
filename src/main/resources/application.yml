@@ -74,3 +74,4 @@ app:
         resources: dsu-resource-server
         console: console
         pollinterval: 30 #TODO Change this
+        omhcallbackuri: /callback
