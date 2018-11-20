@@ -34,6 +34,33 @@ public class DrishtiResponseService extends ResponseService {
     @Value("${app.drishti.patientidsystem}")
     private String patienIdSystem;
 
+    @Value("${app.drishti.obscatsystem}")
+    private String obsCatSystem;
+    @Value("${app.drishti.obscatcode}")
+    private String obsCatCode;
+    @Value("${app.drishti.obscatdisplay}")
+    private String obsCatDisplay;
+    @Value("${app.drishti.obscodesystem}")
+    private String obsCodeSystem;
+    @Value("${app.drishti.obscodecode}")
+    private String obsCodeCode;
+    @Value("${app.drishti.obscodedisplay}")
+    private String obsCodeDisplay;
+    @Value("${app.drishti.obscompcodesystem}")
+    private String obsCompCodeSystem;
+    @Value("${app.drishti.obscompcodecode}")
+    private String obsCompCodeCode;
+    @Value("${app.drishti.obscompcodedisplay}")
+    private String obsCompCodeDisplay;
+    @Value("${app.drishti.obscompcodetext}")
+    private String obsCompCodeText;
+    @Value("${app.drishti.obscompvaluecodeunit}")
+    private String obsCompValueCodeUnit;
+    @Value("${app.drishti.obscompvaluecodesystem}")
+    private String obsCompValueCodeSystem;
+    @Value("${app.drishti.obscompvaluecodecode}")
+    private String obsCompValueCodeCode;
+
     @Override
     public String getShimmerId(String ehrId, String shimkey){
         logger.debug("Checking User EHR ID: [" + ehrId + "] ShimKey: [" + shimkey + "]");

@@ -77,3 +77,16 @@ app:
         omhcallbackuri: /callback
         patientresourceid: p
         patientidsystem: https://openmrs.org/shimmer/patient_ids
+        obscatsystem: https://snomed.info.sct
+        obscatcode: 68130003
+        obscatdisplay: "Physical activity (observable entity)"
+        obscodesystem: http://loinc.org
+        obscodecode: "55423-8"
+        obscodedisplay: "Number of steps in unspecified time Pedometer"
+        obscompcodesystem: http://hl7.org/fhir/observation-statistics
+        obscompcodecode: maximum
+        obscompcodedisplay: Maximum
+        obscompcodetext: Maximum
+        obscompvaluecodeunit: "/{tot}"
+        obscompvaluecodesystem: "http://unitsofmeasure.org"
+        obscompvaluecodecode: "{steps}/{tot}"
