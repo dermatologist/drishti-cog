@@ -1,6 +1,7 @@
 package com.canehealth.service;
 
 import com.canehealth.repository.DrishtiApplicationUserRepository;
+import com.canehealth.repository.DrishtiShimmerDataRepository;
 import org.gtri.hdap.mdata.jpa.entity.ApplicationUser;
 import org.gtri.hdap.mdata.jpa.entity.ApplicationUserId;
 import org.gtri.hdap.mdata.service.ResponseService;
@@ -21,14 +22,17 @@ public class DrishtiResponseService extends ResponseService {
 
     @Autowired
     private DrishtiApplicationUserRepository drishtiApplicationUserRepository;
-//    @Autowired
-//    private DrishtiShimmerDataRepository shimmerDataRepository;
+
+    @Autowired
+    private DrishtiShimmerDataRepository shimmerDataRepository;
 
     private final Logger logger = LoggerFactory.getLogger(ResponseService.class);
 
     @Value("${app.drishti.patientresourceid}")
     private String patientResourceId;
 
+    @Value("${app.drishti.patientidsystem}")
+    private String patienIdSystem;
 
     @Override
     public String getShimmerId(String ehrId, String shimkey){
@@ -60,5 +64,13 @@ public class DrishtiResponseService extends ResponseService {
         List<Identifier> idList = createSingleIdentifier(shimKey);
         patient.setIdentifier(idList);
         return patient;
+    }
+
+    @Override
+    public Identifier createIdentifier(String id){
+        Identifier identifier = new Identifier();
+        identifier.setSystem(patienIdSystem);
+        identifier.setValue(id);
+        return identifier;
     }
 }
