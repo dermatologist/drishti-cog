@@ -4,11 +4,15 @@ import com.canehealth.repository.DrishtiApplicationUserRepository;
 import org.gtri.hdap.mdata.jpa.entity.ApplicationUser;
 import org.gtri.hdap.mdata.jpa.entity.ApplicationUserId;
 import org.gtri.hdap.mdata.service.ResponseService;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +25,10 @@ public class DrishtiResponseService extends ResponseService {
 //    private DrishtiShimmerDataRepository shimmerDataRepository;
 
     private final Logger logger = LoggerFactory.getLogger(ResponseService.class);
+
+    @Value("${app.drishti.patientresourceid}")
+    private String patientResourceId;
+
 
     @Override
     public String getShimmerId(String ehrId, String shimkey){
@@ -41,5 +49,16 @@ public class DrishtiResponseService extends ResponseService {
         String shimmerId = user.getShimmerId();
         logger.debug("Returning shimmer id: " + shimmerId);
         return shimmerId;
+    }
+
+    @Override
+    public Patient generatePatient(String shimKey){
+        Patient patient = new Patient();
+        //set id
+        patient.setId(patientResourceId);
+        //set identifier
+        List<Identifier> idList = createSingleIdentifier(shimKey);
+        patient.setIdentifier(idList);
+        return patient;
     }
 }
