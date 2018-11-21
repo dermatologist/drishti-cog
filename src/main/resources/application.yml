@@ -90,3 +90,5 @@ app:
         obscompvaluecodeunit: "/{tot}"
         obscompvaluecodesystem: "http://unitsofmeasure.org"
         obscompvaluecodecode: "{steps}/{tot}"
+        shimmerbase: /
+        shimmerredirect: /
