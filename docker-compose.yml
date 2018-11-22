@@ -1,0 +1,43 @@
+version: '3.0'
+services:
+  resource-server:
+    image: openmhealth/shimmer-resource-server
+    #restart: always
+    #    environment:
+    #      SPRING_PROFILES_ACTIVE: development
+    depends_on:
+    - mongo
+    env_file:
+    - resource-server.env
+    links:
+    - mongo:omh-mongo
+    #ports:
+    #- "8084:8083"
+
+  mongo:
+    image: mongo
+    #restart: always
+
+  # PostgreSQL is used to store OAuth 2.0 client credentials and access tokens.
+  # TODO: prepopulation script resources/rdbms/postgresql
+  postgres:
+    build: ./postgresql/.
+    image: beapen/drishti-postgres:latest
+    #restart: always
+
+  drishti-haproxy:
+    build: ./haproxy/.
+    image: beapen/drishti-haproxy:latest
+    ports:
+    - "8080:8080"
+    - "8077:5001"
+    #networks:
+    #- overlay
+    depends_on:
+    - resource-server
+
+  drishti-cog:
+    build: .
+    image: beapen/drishti-cog:latest
+    depends_on:
+    - resource-server
