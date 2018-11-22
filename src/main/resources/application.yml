@@ -74,7 +74,7 @@ app:
         resources: dsu-resource-server
         console: console
         pollinterval: 30 #TODO Change this
-        omhcallbackuri: /callback
+        omhcallbackuri: /
         patientresourceid: p
         patientidsystem: https://openmrs.org/shimmer/patient_ids
         obscatsystem: https://snomed.info.sct

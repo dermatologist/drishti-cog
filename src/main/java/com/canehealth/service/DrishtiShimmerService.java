@@ -224,7 +224,7 @@ public class DrishtiShimmerService extends ShimmerService {
                     shimmerResponseData = responseJson.getString("authorizationUrl");
                 } else{
                     logger.debug("User is authorized");
-                    shimmerResponseData = System.getenv(omhCallbackUri);
+                    shimmerResponseData = omhCallbackUri;
                 }
 
                 //set the URL as
