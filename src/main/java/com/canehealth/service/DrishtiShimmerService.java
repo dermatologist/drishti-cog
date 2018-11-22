@@ -17,13 +17,12 @@ import org.gtri.hdap.mdata.jpa.entity.ShimmerData;
 import org.gtri.hdap.mdata.service.ShimmerResponse;
 import org.gtri.hdap.mdata.service.ShimmerService;
 import org.gtri.hdap.mdata.service.UnsupportedFhirDatePrefixException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -49,6 +48,7 @@ public class DrishtiShimmerService extends ShimmerService {
     @Override
     public ShimmerResponse requestShimmerAuthUrl(String shimmerId, String shimkey){
         String shimmerAuthUrl = shimmerBase + SHIMMER_AUTH_URL;
+        // `SHIMMER_REDIRECT_URL` the URL to the mdata-app /authorize/fitbit/callback endpoint
         String shimmerRedirectUrl =shimmerRedirect;
         shimmerAuthUrl = shimmerAuthUrl.replace("{shim-key}", shimkey);
         shimmerAuthUrl = shimmerAuthUrl.replace("{username}", shimmerId);
@@ -190,6 +190,7 @@ public class DrishtiShimmerService extends ShimmerService {
         return httpClient;
     }
 
+    // To debug
     private ShimmerResponse checkShimmerAuthResponse(CloseableHttpResponse shimmerAuthResponse) throws IOException {
         String shimmerResponseData = null;
         ShimmerResponse shimmerResponse;
@@ -221,8 +222,7 @@ public class DrishtiShimmerService extends ShimmerService {
                 if( !responseJson.getBoolean("isAuthorized") ){
                     logger.debug("User is not authorized");
                     shimmerResponseData = responseJson.getString("authorizationUrl");
-                }
-                else{
+                } else{
                     logger.debug("User is authorized");
                     shimmerResponseData = System.getenv(omhCallbackUri);
                 }
