@@ -11,8 +11,8 @@ services:
     - resource-server.env
     links:
     - mongo:omh-mongo
-    #ports:
-    #- "8084:8083"
+    ports:
+    - "8077:8083"
 
   mongo:
     image: mongo
@@ -30,7 +30,7 @@ services:
     image: beapen/drishti-haproxy:latest
     ports:
     - "8080:8080"
-    - "8077:5001"
+    #- "8081:5001"
     #networks:
     #- overlay
     depends_on:
