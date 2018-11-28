@@ -28,10 +28,15 @@ spring:
       hibernate.search.default.indexBase: target/lucenefiles
       hibernate.search.lucene_version: LUCENE_CURRENT
       hibernate.search.model_mapping: ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory
+      hibernate.jdbc.lob.non_contextual_creation: true
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  #  h2:
+  #    console:
+  #      enabled: true
+  datasource:
+    url: jdbc:postgresql://postgres:5432/omh
+    username: postgres
 
-  h2:
-    console:
-      enabled: true
 hapi:
   fhir:
     version: dstu3

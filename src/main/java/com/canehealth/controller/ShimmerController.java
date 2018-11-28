@@ -1,5 +1,6 @@
 package com.canehealth.controller;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.canehealth.repository.DrishtiApplicationUserRepository;
 import com.canehealth.repository.DrishtiShimmerDataRepository;
 import com.canehealth.service.DrishtiResponseService;
@@ -170,8 +171,10 @@ public class ShimmerController {
 
     //handles requests of the format
     //GET https://apps.hdap.gatech.edu/hapiR4/baseR4/Observation?subject=EXf201
-    @GetMapping("/Observation")
-    public ResponseEntity findObservation(@RequestParam(name = "subject", required = true) String shimmerId,
+    //@GetMapping("/Observation")
+    // https://groups.google.com/forum/#!topic/hapi-fhir/WPM-A9g_1Kg
+    @GetMapping(value = {"/Observation"}, produces = "application/json")
+    public Object findObservation(@RequestParam(name = "subject", required = true) String shimmerId,
                                           @RequestParam(name = "date") List<String> dateQueries) {
 
         logger.debug("processing observation request");
@@ -195,7 +198,11 @@ public class ShimmerController {
         }
 
         Bundle responseBundle = drishtiResponseService.makeBundle(observations);
-        return ResponseEntity.ok(responseBundle);
+
+        // https://groups.google.com/forum/#!topic/hapi-fhir/WPM-A9g_1Kg
+        FhirContext ctx = FhirContext.forDstu3();
+        return ctx.newJsonParser().encodeResourceToString(responseBundle);
+        //return ResponseEntity.ok(responseBundle);
     }
 
 

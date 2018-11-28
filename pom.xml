@@ -83,11 +83,17 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--<dependency>-->
+        <!--<groupId>com.h2database</groupId>-->
+        <!--<artifactId>h2</artifactId>-->
+        <!--<version>${h2.version}</version>-->
+        <!--</dependency>-->
         <dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-            <version>${h2.version}</version>
-		</dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4-1206-jdbc42</version>
+        </dependency>
+
         <dependency>
 
             <groupId>org.slf4j</groupId>
