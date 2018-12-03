@@ -59,19 +59,30 @@ public class DataController {
         IdDt id = (IdDt) outcome.getId();
         patient.setId(id);
         logger.info("Patient ID: " + id.getValue());
-
+        MethodOutcome outcome2;
+        IdDt id2;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             Resource resource = entry.getResource();
             if (resource instanceof Observation) {
                 Observation obs = (Observation) resource;
                 obs.setSubject(new Reference(patient));
-                MethodOutcome outcome2 = fhirClient.create()
+                outcome2 = fhirClient.create()
                         .resource(obs)
                         .prettyPrint()
                         .encodedJson()
                         .execute();
-                IdDt id2 = (IdDt) outcome2.getId();
+                id2 = (IdDt) outcome2.getId();
                 logger.info("Set Observation with ID: " + id2.getValue());
+            }else if (resource instanceof CarePlan){
+                CarePlan carePlan = (CarePlan) resource;
+                carePlan.setSubject(new Reference(patient));
+                outcome2 = fhirClient.create()
+                        .resource(carePlan)
+                        .prettyPrint()
+                        .encodedJson()
+                        .execute();
+                id2 = (IdDt) outcome2.getId();
+                logger.info("Set Careplan with ID: " + id2.getValue());
             }
         }
         return ResponseEntity.ok(patient);
