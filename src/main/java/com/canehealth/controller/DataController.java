@@ -1,6 +1,8 @@
 package com.canehealth.controller;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.canehealth.config.DataConfig;
@@ -9,9 +11,11 @@ import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class DataController {
@@ -20,24 +24,26 @@ public class DataController {
     private DataConfig dataConfig;
     private IGenericClient fhirClient;
     //private static FhirContext fhirContext;
+    private final FhirContext ctx;
 
     public DataController(DatasetInitializer dataInitializer, IGenericClient fhirClient, DataConfig dataConfig) {
         this.dataConfig = dataConfig;
         this.fhirClient = fhirClient;
         this.dataInitializer = dataInitializer;
         //fhirContext = FhirContext.forDstu3();
+        ctx = FhirContext.forDstu3();
     }
 
     /**
      * Handles Bundle as posted. The first element is the patient.
      *
-     * @param uuid
-     * @param bundle
-     * @return
      */
     //GET https://apps.hdap.gatech.edu/hapiR4/baseR4/DocumentReference?subject=EXxcda
-    @GetMapping("/ProcessBundle")
-    public ResponseEntity processBundle(@RequestParam(name = "uuid", required = true) String uuid, @RequestParam(name = "bundle", required = true) Bundle bundle) {
+    @PostMapping("/ProcessBundle")
+    public ResponseEntity processBundle(@RequestBody Map<String, String> json) {
+        String uuid = json.get("uuid");
+        final IParser parser = ctx.newJsonParser();
+        Bundle bundle = parser.parseResource(Bundle.class, json.get("bundle"));
         logger.info("Processing bundle: ", uuid);
 
         // First resource in the bundle is the patient
