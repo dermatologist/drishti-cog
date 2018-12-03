@@ -79,7 +79,7 @@ app:
         resources: dsu-resource-server
         console: console
         pollinterval: 30 #TODO Change this
-        omhcallbackuri: http://sdk.canehealth.com/openmrs/owa/drishti/index.html#/
+        omhcallbackuri: http://tomcat.nuchange.ca/openmrs/owa/drishti/index.html#/
         patientresourceid: p
         patientidsystem: https://openmrs.org/shimmer/patient_ids
         obscatsystem: https://snomed.info.sct
