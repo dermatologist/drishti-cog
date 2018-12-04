@@ -25,7 +25,7 @@ public class DataController {
     //private static FhirContext fhirContext;
     private final FhirContext ctx;
 
-    @Value("${app.drishti.shimmerbase}")
+    @Value("${app.drishti.fhirbase}")
     private String serverBase;
 
     public DataController(DatasetInitializer dataInitializer, IGenericClient fhirClient, DataConfig dataConfig) {

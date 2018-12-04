@@ -95,5 +95,6 @@ app:
         obscompvaluecodeunit: "/{tot}"
         obscompvaluecodesystem: "http://unitsofmeasure.org"
         obscompvaluecodecode: "{steps}/{tot}"
-        shimmerbase: http://tomcat.nuchange.ca
+        shimmerbase: http://summary.nuchange.ca
+        fhirbase: http://tomcat.nuchange.ca/fhir
         shimmerredirect: http://tomcat.nuchange.ca/authorize/googlefit/callback
