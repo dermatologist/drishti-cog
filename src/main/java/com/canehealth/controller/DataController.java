@@ -10,6 +10,7 @@ import com.canehealth.config.DatasetInitializer;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,9 @@ public class DataController {
     private IGenericClient fhirClient;
     //private static FhirContext fhirContext;
     private final FhirContext ctx;
+
+    @Value("${app.drishti.shimmerbase}")
+    private String serverBase;
 
     public DataController(DatasetInitializer dataInitializer, IGenericClient fhirClient, DataConfig dataConfig) {
         this.dataConfig = dataConfig;
@@ -49,9 +53,11 @@ public class DataController {
         // First resource in the bundle is the patient
         Patient patient = (Patient) bundle.getEntry().get(0).getResource();
 
-        // Conditional Create this patient
+        // Creating client
+        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
-        MethodOutcome outcome = fhirClient.create()
+        // Conditional Create this patient
+        MethodOutcome outcome = client.create()
                 .resource(patient)
                 .conditional()
                 .where(Patient.IDENTIFIER.exactly().systemAndIdentifier("urn:system", uuid))
@@ -72,7 +78,7 @@ public class DataController {
             if (resource instanceof Observation) {
                 Observation obs = (Observation) resource;
                 obs.setSubject(new Reference(patient));
-                outcome2 = fhirClient.create()
+                outcome2 = client.create()
                         .resource(obs)
                         .prettyPrint()
                         .encodedJson()
@@ -82,7 +88,7 @@ public class DataController {
             }else if (resource instanceof CarePlan){
                 CarePlan carePlan = (CarePlan) resource;
                 carePlan.setSubject(new Reference(patient));
-                outcome2 = fhirClient.create()
+                outcome2 = client.create()
                         .resource(carePlan)
                         .prettyPrint()
                         .encodedJson()

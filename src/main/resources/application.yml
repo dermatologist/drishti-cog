@@ -80,7 +80,7 @@ app:
         console: console
         pollinterval: 30 #TODO Change this
         omhcallbackuri: http://tomcat.nuchange.ca/openmrs/owa/drishti/index.html#/
-        patientresourceid: p
+        patientresourceid: Patient
         patientidsystem: https://openmrs.org/shimmer/patient_ids
         obscatsystem: https://snomed.info.sct
         obscatcode: 68130003
@@ -95,5 +95,5 @@ app:
         obscompvaluecodeunit: "/{tot}"
         obscompvaluecodesystem: "http://unitsofmeasure.org"
         obscompvaluecodecode: "{steps}/{tot}"
-        shimmerbase: http://summary.nuchange.ca
+        shimmerbase: http://tomcat.nuchange.ca
         shimmerredirect: http://tomcat.nuchange.ca/authorize/googlefit/callback
