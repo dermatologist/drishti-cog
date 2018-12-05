@@ -7,7 +7,9 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import com.canehealth.config.DataConfig;
 import com.canehealth.config.DatasetInitializer;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +29,9 @@ public class DataController {
 
     @Value("${app.drishti.fhirbase}")
     private String serverBase;
+
+    @Value("${app.drishti.urnsystem}")
+    private String urnSystem;
 
     public DataController(DatasetInitializer dataInitializer, IGenericClient fhirClient, DataConfig dataConfig) {
         this.dataConfig = dataConfig;
@@ -60,7 +65,7 @@ public class DataController {
         MethodOutcome outcome = client.create()
                 .resource(patient)
                 .conditional()
-                .where(Patient.IDENTIFIER.exactly().systemAndIdentifier("urn:system", uuid))
+                .where(Patient.IDENTIFIER.exactly().systemAndIdentifier(urnSystem, uuid))
                 .execute();
 
         // This will return Boolean.TRUE if the server responded with an HTTP 201 created,
@@ -71,32 +76,47 @@ public class DataController {
         IdDt id = (IdDt) outcome.getId();
         patient.setId(id);
         logger.info("Patient ID: " + id.getValue());
-        MethodOutcome outcome2;
-        IdDt id2;
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            Resource resource = entry.getResource();
-            if (resource instanceof Observation) {
-                Observation obs = (Observation) resource;
-                obs.setSubject(new Reference(patient));
-                outcome2 = client.create()
-                        .resource(obs)
-                        .prettyPrint()
-                        .encodedJson()
-                        .execute();
-                id2 = (IdDt) outcome2.getId();
-                logger.info("Set Observation with ID: " + id2.getValue());
-            }else if (resource instanceof CarePlan){
-                CarePlan carePlan = (CarePlan) resource;
-                carePlan.setSubject(new Reference(patient));
-                outcome2 = client.create()
-                        .resource(carePlan)
-                        .prettyPrint()
-                        .encodedJson()
-                        .execute();
-                id2 = (IdDt) outcome2.getId();
-                logger.info("Set Careplan with ID: " + id2.getValue());
-            }
-        }
+
+
+        Identifier identifier = new Identifier();
+        identifier.setSystem(urnSystem);
+        identifier.setValue(uuid);
+
+        bundle.setIdentifier(identifier);
+
+        MethodOutcome outcome2 = client.create()
+                .resource(bundle)
+                .prettyPrint()
+                .encodedJson()
+                .execute();
+
+        IdDt id2 = (IdDt) outcome2.getId();
+        logger.info("Set Bundle with ID: " + id2.getValue());
+
+//        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+//            Resource resource = entry.getResource();
+//            if (resource instanceof Observation) {
+//                Observation obs = (Observation) resource;
+//                obs.setSubject(new Reference(patient));
+//                outcome2 = client.create()
+//                        .resource(obs)
+//                        .prettyPrint()
+//                        .encodedJson()
+//                        .execute();
+//                id2 = (IdDt) outcome2.getId();
+//                logger.info("Set Observation with ID: " + id2.getValue());
+//            }else if (resource instanceof CarePlan){
+//                CarePlan carePlan = (CarePlan) resource;
+//                carePlan.setSubject(new Reference(patient));
+//                outcome2 = client.create()
+//                        .resource(carePlan)
+//                        .prettyPrint()
+//                        .encodedJson()
+//                        .execute();
+//                id2 = (IdDt) outcome2.getId();
+//                logger.info("Set Careplan with ID: " + id2.getValue());
+//            }
+//        }
         return ResponseEntity.ok(patient);
     }
 
