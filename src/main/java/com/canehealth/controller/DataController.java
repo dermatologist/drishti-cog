@@ -1,7 +1,6 @@
 package com.canehealth.controller;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -73,9 +72,9 @@ public class DataController {
         Boolean created = outcome.getCreated();
 
         // The ID of the created, or the pre-existing resource
-        IdDt id = (IdDt) outcome.getId();
-        patient.setId(id);
-        logger.info("Patient ID: " + id.getValue());
+//        IdDt id = (IdDt) outcome.getId();
+//        patient.setId(id);
+        logger.info("Patient Processed");
 
 
         Identifier identifier = new Identifier();
@@ -90,8 +89,8 @@ public class DataController {
                 .encodedJson()
                 .execute();
 
-        IdDt id2 = (IdDt) outcome2.getId();
-        logger.info("Set Bundle with ID: " + id2.getValue());
+//        IdDt id2 = (IdDt) outcome2.getId();
+        logger.info("Bundle processed");
 
 //        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
 //            Resource resource = entry.getResource();
