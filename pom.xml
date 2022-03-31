@@ -19,7 +19,7 @@
         <maven.build.timestamp.format>EEE, MMM dd yyyy, HH:mm Z</maven.build.timestamp.format>
         <camel.version>2.22.1</camel.version>
         <omh-schema.version>1.2.1</omh-schema.version>
-        <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
+        <spring-boot.version>2.5.12</spring-boot.version>
         <h2.version>1.4.197</h2.version>
         <slf4jVersion>1.7.16</slf4jVersion>
     </properties>
